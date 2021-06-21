@@ -1,6 +1,6 @@
 {
   "name": "@motionbox/motionbox-js",
-  "version": "0.3.0",
+  "version": "0.0.1",
   "main": "dist/motionbox.js",
   "module": "dist/motionbox.esm.js",
   "repository": "https://github.com/motionboxio/motionbox-js.git",
