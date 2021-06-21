@@ -123,7 +123,7 @@ echo "Building"
 yarn -s run build
 
 echo "Publishing release"
-yarn -s --ignore-scripts publish --non-interactive --access=public
+yarn -s --ignore-scripts publish --access=public
 
 echo "Pushing git commit and tag"
 git push --follow-tags
