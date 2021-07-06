@@ -10,6 +10,8 @@ export const SOCKET_URI =
 const API_ENDPOINT =
   "https://microservice.storycreatorapp.com/api/motionbox-render";
 
+// TODO: Keep connection alive with heartbeats
+
 export const motionbox = {
   socket: new WebSocket(SOCKET_URI),
   init: () => {
@@ -42,6 +44,8 @@ export const motionbox = {
         const { Data } = JSON.parse(event.data);
         const isDone = Data?.finalVideo && Data?.videoId === videoId && !done;
         const isProgressing = Data?.progress && Data?.totalFrames;
+
+        // TODO: log when ffmpeg trim and other pre render things happen
 
         // progress
         if (isProgressing) {
