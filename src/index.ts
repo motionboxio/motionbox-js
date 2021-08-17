@@ -8,7 +8,7 @@ export const SOCKET_URI =
   "wss://c6ifiee5t6.execute-api.us-west-2.amazonaws.com/development";
 
 const API_ENDPOINT =
-  "https://microservice.storycreatorapp.com/api/motionbox-render";
+  "https://microservice-staging.vercel.app/api/motionbox-render";
 
 // TODO: Keep connection alive with heartbeats
 
@@ -54,6 +54,7 @@ export const motionbox = {
 
           progress({
             total: Number(Data.totalFrames),
+            errors: Data.errors,
             message:
               percentage !== 100
                 ? "Rendering..."
