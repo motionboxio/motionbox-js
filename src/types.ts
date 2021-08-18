@@ -48,7 +48,7 @@ export interface IData {
 
 export interface IProgress {
   total: number;
-  status: string;
+  status?: string;
   errors: string;
   message: string;
   currentFrame: number;
