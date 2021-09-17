@@ -5,10 +5,10 @@ import { IRender } from "./types";
 export * from "./types";
 
 export const SOCKET_URI =
-  "wss://c6ifiee5t6.execute-api.us-west-2.amazonaws.com/development";
+  "wss://c6ifiee5t6.execute-api.us-west-2.amazonaws.com/production";
 
 const API_ENDPOINT =
-  "https://microservice-staging.vercel.app/api/motionbox-render";
+  "https://microservice.storycreatorapp.com/api/motionbox-render";
 
 // TODO: Keep connection alive with heartbeats
 
