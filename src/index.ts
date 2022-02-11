@@ -55,6 +55,7 @@ export const motionbox = {
           progress({
             total: Number(Data.totalFrames),
             errors: Data.errors,
+            status: Data.status,
             message:
               percentage !== 100
                 ? "Rendering..."
