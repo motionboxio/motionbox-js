@@ -7,11 +7,13 @@ export * from "./types";
 export const SOCKET_URI =
   "wss://c6ifiee5t6.execute-api.us-west-2.amazonaws.com/production";
 
-const API_ENDPOINT =
-  "https://microservice.storycreatorapp.com/api/motionbox-render";
+const API_ENDPOINT = "https://microservice.motionbox.io/api/motionbox-render";
+const DEV_API_ENDPOINT =
+  "https://microservice-staging.vercel.app/api/motionbox-render";
 
 // TODO: Keep connection alive with heartbeats
-
+// TODO: Make pointing to a template optional
+// TODO: User should be able to render a video from scratch
 export const motionbox = {
   socket: new WebSocket(SOCKET_URI),
   init: () => {
@@ -34,7 +36,7 @@ export const motionbox = {
       motionbox.socket.addEventListener("message", handleConnection);
     });
   },
-  render: async ({ data, token, templateId, progress }: IRender) => {
+  render: async ({ data, token, templateId, progress, isDev }: IRender) => {
     return new Promise<string>(async (resolve, reject) => {
       const videoId = uuid();
       const connectionId = localStorage.getItem("connectionId");
@@ -74,7 +76,7 @@ export const motionbox = {
       try {
         await axios({
           method: "post",
-          url: API_ENDPOINT,
+          url: isDev ? DEV_API_ENDPOINT : API_ENDPOINT,
           data: {
             data,
             token,

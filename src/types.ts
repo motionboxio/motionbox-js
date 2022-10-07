@@ -56,6 +56,7 @@ export interface IProgress {
 export interface IRender {
   data: IData;
   token: string;
+  isDev?: boolean;
   templateId: string;
   progress: (progress: IProgress) => void;
 }
