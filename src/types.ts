@@ -6,7 +6,16 @@ export interface IBaseObject {
   width: number;
   height: number;
   endTime: number;
+  endDelta: number;
+  metadata?: string;
   startTime: number;
+  trackIndex: number;
+  startDelta: number;
+}
+
+export interface IVideoObject {
+  image: string;
+  duration: number;
 }
 
 export interface ITextObject {
@@ -14,6 +23,7 @@ export interface ITextObject {
   fontSize?: number;
   fontFamily?: string;
   lineHeight?: number;
+  fontWeight?: string;
   textAlignment?: string;
 }
 
@@ -43,7 +53,8 @@ export interface IData {
     | ITextObject
     | ISubtitlesObject
     | IVisualizerObject
-    | IImageObject;
+    | IImageObject
+    | IVideoObject;
 }
 
 export interface IProgress {
@@ -59,4 +70,10 @@ export interface IRender {
   isDev?: boolean;
   templateId: string;
   progress: (progress: IProgress) => void;
+}
+
+export interface IMotionbox {
+  init: () => Promise<string>;
+  socket: WebSocket;
+  render: (args: IRender) => Promise<string>;
 }

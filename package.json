@@ -1,6 +1,6 @@
 {
   "name": "@motionbox/motionbox-js",
-  "version": "0.2.6",
+  "version": "0.3.4",
   "main": "dist/motionbox.js",
   "module": "dist/motionbox.esm.js",
   "jsnext:main": "dist/motionbox.esm.js",
@@ -13,7 +13,7 @@
     "test": "jest --env=jsdom",
     "clean": "rimraf dist",
     "build": "yarn clean && yarn rollup -c",
-    "publish": "sh ./scripts/publish.sh patch"
+    "publish": "yarn build && sh ./scripts/publish.sh patch"
   },
   "dependencies": {
     "axios": "^0.24.0",
