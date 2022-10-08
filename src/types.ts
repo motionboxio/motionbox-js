@@ -27,6 +27,11 @@ export interface ITextObject {
   textAlignment?: string;
 }
 
+export interface ISubtitleObject extends ITextObject {
+  words: any[];
+  highlighter: boolean;
+}
+
 export interface ISubtitlesObject {
   loading?: boolean;
   color?: IBackground;
@@ -51,6 +56,7 @@ export interface IData {
   [uid: string]:
     | IBaseObject
     | ITextObject
+    | ISubtitleObject
     | ISubtitlesObject
     | IVisualizerObject
     | IImageObject
@@ -61,6 +67,7 @@ export interface IProgress {
   total: number;
   errors: string;
   message: string;
+  percentage: number;
   currentFrame: number;
 }
 
@@ -68,7 +75,7 @@ export interface IRender {
   data: IData;
   token: string;
   isDev?: boolean;
-  templateId: string;
+  templateId?: string;
   progress: (progress: IProgress) => void;
 }
 
