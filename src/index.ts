@@ -89,6 +89,7 @@ export const motionbox: IMotionbox | undefined =
           return new Promise<string>(async (resolve, reject) => {
             if (motionbox) {
               const videoId = uuid();
+              const connectionId = localStorage.getItem("connectionId");
 
               const handleStream = async (event: any) => {
                 let done = false;
@@ -131,16 +132,6 @@ export const motionbox: IMotionbox | undefined =
 
               // trigger
               try {
-                // test get fresh connectionId
-                await new Promise((reoslve) => {
-                  setTimeout(() => {
-                    motionbox.socket.send("connectionId");
-                    reoslve("");
-                  }, 1000);
-                });
-
-                const connectionId = localStorage.getItem("connectionId");
-
                 await axios({
                   method: "post",
                   url: isDev ? DEV_API_ENDPOINT : API_ENDPOINT,
