@@ -43,7 +43,11 @@ export const motionbox: IMotionbox | undefined =
                 if (data.connectionId) {
                   if (connectionId) {
                     console.log(
-                      "Socket is sending new connectionId... Overriding old connectionId..."
+                      "Socket is sending new connectionId... Overriding old connectionId...",
+                      {
+                        old: connectionId,
+                        new: data.connectionId,
+                      }
                     );
                   } else {
                     console.log("We got an initial connectionId...");
@@ -68,6 +72,8 @@ export const motionbox: IMotionbox | undefined =
                 console.log("WebSocket is closed now...", { event });
                 interval && clearInterval(interval);
               };
+
+              (window as any).MB = motionbox;
             } else {
               reject("Motionbox is missing...");
             }
