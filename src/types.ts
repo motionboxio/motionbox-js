@@ -81,6 +81,6 @@ export interface IRender {
 
 export interface IMotionbox {
   init: () => Promise<string>;
-  socket: WebSocket;
+  socket: any; //WebSocket;
   render: (args: IRender) => Promise<string>;
 }

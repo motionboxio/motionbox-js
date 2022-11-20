@@ -1,5 +1,6 @@
 import axios from "axios";
 import { v1 as uuid } from "uuid";
+import ReconnectingWebSocket from "reconnecting-websocket";
 import { IRender, IMotionbox } from "./types";
 
 export * from "./types";
@@ -19,7 +20,9 @@ const DEV_API_ENDPOINT =
 export const motionbox: IMotionbox | undefined =
   typeof window !== "undefined"
     ? {
-        socket: new WebSocket(SOCKET_URI),
+        socket: new ReconnectingWebSocket(SOCKET_URI, undefined, {
+          debug: true,
+        }),
         init: () => {
           return new Promise<string>((resolve, reject) => {
             if (motionbox) {
@@ -45,7 +48,7 @@ export const motionbox: IMotionbox | undefined =
                     console.log(
                       "Socket is sending new connectionId... Overriding old connectionId...",
                       {
-                        old: connectionId,
+                        old: connectionId, // cached on initalization
                         new: data.connectionId,
                       }
                     );

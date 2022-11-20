@@ -17,6 +17,6 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
+  "include": ["src", "modules.d.ts"],
   "exclude": ["node_modules", "build", "dist", "example", "rollup.config.mjs"]
 }
