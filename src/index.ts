@@ -74,14 +74,21 @@ export const motionbox: IMotionbox | undefined =
               // socket error
               motionbox.socket.onerror = (event: any) => {
                 console.error("WebSocket error observed: 🔴", event);
-                interval && clearInterval(interval);
                 motionbox.socket.close();
               };
 
               // socket closed
               motionbox.socket.onclose = (event: any) => {
-                console.log("WebSocket is closed now... ☠️", { event });
-                interval && clearInterval(interval);
+                console.log("WebSocket is closed now... ☠️", {
+                  event,
+                  shouldReconnect: motionbox.socket._shouldReconnect,
+                });
+
+                if (motionbox.socket._shouldReconnect) {
+                  motionbox.socket._connect();
+                } else {
+                  interval && clearInterval(interval);
+                }
               };
 
               (window as any).MB = motionbox;
