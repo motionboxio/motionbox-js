@@ -31,10 +31,14 @@ export const motionbox: IMotionbox | undefined =
 
               // heartbeat
               interval = setInterval(() => {
+                console.log("Sending heartbeat ❤️❤️❤️");
                 motionbox.socket.send("heartbeat");
               }, 120000);
 
               motionbox.socket.onopen = () => {
+                console.log(
+                  "Socket connection opened ✅ sending default route request to get connectionId..."
+                );
                 motionbox.socket.send("connectionId");
               };
 
@@ -56,6 +60,9 @@ export const motionbox: IMotionbox | undefined =
                     console.log("We got an initial connectionId...");
                   }
 
+                  console.log("Initializing app with, this could go stale?", {
+                    connecionId: data.connectionId,
+                  });
                   localStorage.setItem("connectionId", data.connectionId);
                   resolve(data.connectionId);
                 }
@@ -66,23 +73,15 @@ export const motionbox: IMotionbox | undefined =
 
               // socket error
               motionbox.socket.onerror = (event: any) => {
-                console.error("WebSocket error observed:", event);
+                console.error("WebSocket error observed: 🔴", event);
                 interval && clearInterval(interval);
                 motionbox.socket.close();
               };
 
               // socket closed
               motionbox.socket.onclose = (event: any) => {
-                console.log("WebSocket is closed now...", { event });
+                console.log("WebSocket is closed now... ☠️", { event });
                 interval && clearInterval(interval);
-                console.log(
-                  "Socket is closed. Reconnect will be attempted in 1 second.",
-                  event.reason
-                );
-                setTimeout(function () {
-                  motionbox.socket = new WebSocket(SOCKET_URI);
-                  motionbox.init();
-                }, 1000);
               };
 
               (window as any).MB = motionbox;
