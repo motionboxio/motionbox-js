@@ -65,12 +65,21 @@ export const motionbox: IMotionbox | undefined =
               motionbox.socket.onerror = (event: any) => {
                 console.error("WebSocket error observed:", event);
                 interval && clearInterval(interval);
+                motionbox.socket.close();
               };
 
               // socket closed
               motionbox.socket.onclose = (event: any) => {
                 console.log("WebSocket is closed now...", { event });
                 interval && clearInterval(interval);
+                console.log(
+                  "Socket is closed. Reconnect will be attempted in 1 second.",
+                  event.reason
+                );
+                setTimeout(function () {
+                  motionbox.socket = new WebSocket(SOCKET_URI);
+                  motionbox.init();
+                }, 1000);
               };
 
               (window as any).MB = motionbox;

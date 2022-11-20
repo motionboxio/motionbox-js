@@ -1,6 +1,6 @@
 {
   "name": "@motionbox/motionbox-js",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "main": "dist/motionbox.js",
   "module": "dist/motionbox.esm.js",
   "jsnext:main": "dist/motionbox.esm.js",
