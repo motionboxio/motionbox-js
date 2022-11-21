@@ -44,6 +44,10 @@ export const motionbox: IMotionbox | undefined =
                   }, 120000)
                 : undefined;
 
+              // reconnect?
+              console.log("Init triggered...");
+              motionbox.socket.reconnect();
+
               motionbox.socket.onopen = () => {
                 console.log(
                   "Socket connection opened ✅ sending default route request to get connectionId..."
