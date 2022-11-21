@@ -23,17 +23,21 @@ export const motionbox: IMotionbox | undefined =
         socket: new ReconnectingWebSocket(SOCKET_URI, undefined, {
           debug: true,
         }),
-        init: () => {
+        init: (initOpts) => {
           return new Promise<string>((resolve, reject) => {
             if (motionbox) {
+              const { heartbeat } = initOpts ? initOpts : { heartbeat: true };
+
               let interval: NodeJS.Timeout | undefined;
               const connectionId = localStorage.getItem("connectionId");
 
               // heartbeat
-              interval = setInterval(() => {
-                console.log("Sending heartbeat ❤️❤️❤️");
-                motionbox.socket.send("heartbeat");
-              }, 120000);
+              interval = heartbeat
+                ? setInterval(() => {
+                    console.log("Sending heartbeat ❤️❤️❤️");
+                    motionbox.socket.send("heartbeat");
+                  }, 120000)
+                : undefined;
 
               motionbox.socket.onopen = () => {
                 console.log(
@@ -81,11 +85,11 @@ export const motionbox: IMotionbox | undefined =
               motionbox.socket.onclose = (event: any) => {
                 console.log("WebSocket is closed now... ☠️", {
                   event,
-                  shouldReconnect: motionbox.socket._shouldReconnect,
+                  shouldReconnect: (motionbox.socket as any)._shouldReconnect,
                 });
 
-                if (motionbox.socket._shouldReconnect) {
-                  motionbox.socket._connect();
+                if ((motionbox.socket as any)._shouldReconnect) {
+                  (motionbox.socket as any)._connect();
                 } else {
                   interval && clearInterval(interval);
                 }
@@ -109,7 +113,7 @@ export const motionbox: IMotionbox | undefined =
               const videoId = uuid();
               const connectionId = localStorage.getItem("connectionId");
 
-              const handleStream = async (event: any) => {
+              const handleStream: any = async (event: any) => {
                 let done = false;
                 const data = JSON.parse(event.data);
 

@@ -1,3 +1,5 @@
+import ReconnectingWebSocket from "reconnecting-websocket";
+
 export interface IBaseObject {
   uid: string;
   top: number;
@@ -79,8 +81,12 @@ export interface IRender {
   progress: (progress: IProgress) => void;
 }
 
+export interface IInitOpts {
+  heartbeat?: boolean;
+}
+
 export interface IMotionbox {
-  init: () => Promise<string>;
-  socket: any; //WebSocket;
+  socket: ReconnectingWebSocket; //WebSocket;
+  init: (initOpts?: IInitOpts) => Promise<string>;
   render: (args: IRender) => Promise<string>;
 }
