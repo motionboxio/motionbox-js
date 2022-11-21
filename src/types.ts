@@ -78,6 +78,7 @@ export interface IRender {
   token: string;
   isDev?: boolean;
   onDone: (video: string) => void;
+  onError: (error: any) => void;
   templateId?: string;
   progress: (progress: IProgress) => void;
 }
@@ -94,5 +95,6 @@ export interface IMotionbox {
   renderId: string | undefined;
   onDone: (video: string) => void;
   onMessage: (event: any) => void;
+  onError: (error: any) => void;
   onProgress: any;
 }

@@ -80,6 +80,7 @@ export const motionbox: IMotionbox | undefined =
           token,
           isDev,
           onDone,
+          onError,
           progress,
           templateId,
         }: IRender) => {
@@ -87,6 +88,7 @@ export const motionbox: IMotionbox | undefined =
             if (motionbox) {
               // set functions
               motionbox.onDone = onDone;
+              motionbox.onError = onError;
               motionbox.onProgress = progress;
 
               // trigger
@@ -128,6 +130,7 @@ export const motionbox: IMotionbox | undefined =
           }
         },
         onDone: () => {},
+        onError: () => {},
         onMessage: (event: any) => {
           if (motionbox) {
             const data = JSON.parse(event.data);
@@ -157,6 +160,12 @@ export const motionbox: IMotionbox | undefined =
 
             // render stream
             if (data?.Data) {
+              const hasErrors = data?.Data?.errors;
+
+              if (hasErrors) {
+                return motionbox.onError(data.Data.errors);
+              }
+
               let done = false;
               const isDone =
                 data.Data?.finalVideo &&
