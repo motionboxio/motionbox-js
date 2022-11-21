@@ -27,8 +27,14 @@ export const motionbox: IMotionbox | undefined =
         init: (initOpts) => {
           return new Promise<string>((resolve, reject) => {
             if (motionbox) {
-              const { heartbeat } = initOpts ? initOpts : { heartbeat: true };
               let interval: NodeJS.Timeout | undefined;
+              const { heartbeat, onSocketError, onSocketClose } = initOpts
+                ? initOpts
+                : {
+                    heartbeat: true,
+                    onSocketError: () => {},
+                    onSocketClose: () => {},
+                  };
 
               // heartbeat
               interval = heartbeat
@@ -53,6 +59,10 @@ export const motionbox: IMotionbox | undefined =
               motionbox.socket.onerror = (event: any) => {
                 console.error("WebSocket error observed: 🔴", event);
                 motionbox.socket.close();
+
+                if (onSocketError) {
+                  onSocketError(event);
+                }
               };
 
               // socket closed
@@ -66,6 +76,10 @@ export const motionbox: IMotionbox | undefined =
                   (motionbox.socket as any)._connect();
                 } else {
                   interval && clearInterval(interval);
+                }
+
+                if (onSocketClose) {
+                  onSocketClose(event);
                 }
               };
 

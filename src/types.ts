@@ -85,6 +85,8 @@ export interface IRender {
 
 export interface IInitOpts {
   heartbeat?: boolean;
+  onSocketError?: any;
+  onSocketClose?: any;
 }
 
 export interface IMotionbox {
