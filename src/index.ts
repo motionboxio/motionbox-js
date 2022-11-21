@@ -20,6 +20,7 @@ const DEV_API_ENDPOINT =
 export const motionbox: IMotionbox | undefined =
   typeof window !== "undefined"
     ? {
+        renderId: undefined,
         socket: new ReconnectingWebSocket(SOCKET_URI, undefined, {
           debug: true,
         }),
@@ -27,9 +28,7 @@ export const motionbox: IMotionbox | undefined =
           return new Promise<string>((resolve, reject) => {
             if (motionbox) {
               const { heartbeat } = initOpts ? initOpts : { heartbeat: true };
-
               let interval: NodeJS.Timeout | undefined;
-              const connectionId = localStorage.getItem("connectionId");
 
               // heartbeat
               interval = heartbeat
@@ -44,36 +43,11 @@ export const motionbox: IMotionbox | undefined =
                   "Socket connection opened ✅ sending default route request to get connectionId..."
                 );
                 motionbox.socket.send("connectionId");
-              };
-
-              // connection stream
-              const handleConnection = (event: any) => {
-                const data = JSON.parse(event.data);
-
-                // save connectionId
-                if (data.connectionId) {
-                  if (connectionId) {
-                    console.log(
-                      "Socket is sending new connectionId... Overriding old connectionId...",
-                      {
-                        old: connectionId, // cached on initalization
-                        new: data.connectionId,
-                      }
-                    );
-                  } else {
-                    console.log("We got an initial connectionId...");
-                  }
-
-                  console.log("Initializing app with, this could go stale?", {
-                    connecionId: data.connectionId,
-                  });
-                  localStorage.setItem("connectionId", data.connectionId);
-                  resolve(data.connectionId);
-                }
+                resolve("socket opened and connected ✅");
               };
 
               // socket messages
-              motionbox.socket.addEventListener("message", handleConnection);
+              motionbox.socket.addEventListener("message", motionbox.onMessage);
 
               // socket error
               motionbox.socket.onerror = (event: any) => {
@@ -105,55 +79,21 @@ export const motionbox: IMotionbox | undefined =
           data,
           token,
           isDev,
+          onDone,
           progress,
           templateId,
         }: IRender) => {
           return new Promise<string>(async (resolve, reject) => {
             if (motionbox) {
-              const videoId = uuid();
-              const connectionId = localStorage.getItem("connectionId");
-
-              const handleStream: any = async (event: any) => {
-                let done = false;
-                const data = JSON.parse(event.data);
-
-                // render stream
-                if (data?.Data) {
-                  const isDone =
-                    data.Data?.finalVideo &&
-                    data.Data?.videoId === videoId &&
-                    !done;
-                  const total = Number(data.Data?.totalFrames);
-                  const currentFrame = Number(data.Data?.progress);
-                  const percentage = currentFrame / total;
-                  const isProgressing = data.Data?.totalFrames;
-
-                  // TODO: log when ffmpeg trim and other pre render things happen
-
-                  // progress
-                  if (isProgressing) {
-                    progress({
-                      total,
-                      errors: data.Data.errors,
-                      message:
-                        currentFrame !== total
-                          ? "Rendering..."
-                          : "Finalizing some details...",
-                      percentage,
-                      currentFrame,
-                    });
-                  }
-
-                  // done
-                  if (isDone) {
-                    done = true;
-                    resolve(`${data.Data.finalVideo}?t=${Date.now()}`);
-                  }
-                }
-              };
+              // set functions
+              motionbox.onDone = onDone;
+              motionbox.onProgress = progress;
 
               // trigger
               try {
+                motionbox.renderId = uuid();
+                const connectionId = localStorage.getItem("connectionId");
+
                 await axios({
                   method: "post",
                   url: isDev ? DEV_API_ENDPOINT : API_ENDPOINT,
@@ -161,7 +101,7 @@ export const motionbox: IMotionbox | undefined =
                     data,
                     token,
                     isDev,
-                    videoId,
+                    videoId: motionbox.renderId,
                     templateId: templateId ? templateId : "",
                     connectionId,
                   },
@@ -169,16 +109,88 @@ export const motionbox: IMotionbox | undefined =
                     "Content-Type": "application/json",
                   },
                 });
+
+                resolve("render request sent");
               } catch (e) {
                 reject(`Error triggering render job ${e}`);
               }
-
-              // socket messages
-              motionbox.socket.addEventListener("message", handleStream);
             } else {
               reject("Motionbox is undefined...");
             }
           });
         },
+        destroy: () => {
+          if (motionbox) {
+            motionbox.socket.removeEventListener(
+              "message",
+              motionbox.onMessage
+            );
+          }
+        },
+        onDone: () => {},
+        onMessage: (event: any) => {
+          if (motionbox) {
+            const data = JSON.parse(event.data);
+
+            // save connectionId
+            if (data.connectionId) {
+              const connectionId = localStorage.getItem("connectionId");
+
+              if (connectionId) {
+                console.log(
+                  "Socket is sending new connectionId... Overriding old connectionId...",
+                  {
+                    old: connectionId, // cached on initalization
+                    new: data.connectionId,
+                  }
+                );
+              } else {
+                console.log("We got an initial connectionId...");
+              }
+
+              console.log("Handled connection, lets go!", {
+                connecionId: data.connectionId,
+              });
+              localStorage.setItem("connectionId", data.connectionId);
+              // resolve(data.connectionId);
+            }
+
+            // render stream
+            if (data?.Data) {
+              let done = false;
+              const isDone =
+                data.Data?.finalVideo &&
+                data.Data?.videoId === motionbox.renderId &&
+                !done;
+              const total = Number(data.Data?.totalFrames);
+              const currentFrame = Number(data.Data?.progress);
+              const percentage = currentFrame / total;
+              const isProgressing = data.Data?.totalFrames;
+
+              // TODO: log when ffmpeg trim and other pre render things happen
+
+              // progress
+              if (isProgressing) {
+                motionbox?.onProgress({
+                  total,
+                  errors: data.Data.errors,
+                  message:
+                    currentFrame !== total
+                      ? "Rendering..."
+                      : "Finalizing some details...",
+                  percentage,
+                  currentFrame,
+                });
+              }
+
+              // done
+              if (isDone) {
+                done = true;
+                motionbox.onDone(`${data.Data.finalVideo}?t=${Date.now()}`);
+              }
+            }
+          }
+        },
+        onProgress: () => {},
       }
     : undefined;

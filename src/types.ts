@@ -77,6 +77,7 @@ export interface IRender {
   data: IData;
   token: string;
   isDev?: boolean;
+  onDone: (video: string) => void;
   templateId?: string;
   progress: (progress: IProgress) => void;
 }
@@ -86,7 +87,12 @@ export interface IInitOpts {
 }
 
 export interface IMotionbox {
-  socket: ReconnectingWebSocket; //WebSocket;
   init: (initOpts?: IInitOpts) => Promise<string>;
+  socket: ReconnectingWebSocket; //WebSocket;
+  destroy: any;
   render: (args: IRender) => Promise<string>;
+  renderId: string | undefined;
+  onDone: (video: string) => void;
+  onMessage: (event: any) => void;
+  onProgress: any;
 }
