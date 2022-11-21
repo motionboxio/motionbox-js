@@ -136,7 +136,7 @@ export const motionbox: IMotionbox | undefined =
             const data = JSON.parse(event.data);
 
             // save connectionId
-            if (data.connectionId) {
+            if (data?.connectionId) {
               const connectionId = localStorage.getItem("connectionId");
 
               if (connectionId) {
@@ -155,17 +155,11 @@ export const motionbox: IMotionbox | undefined =
                 connecionId: data.connectionId,
               });
               localStorage.setItem("connectionId", data.connectionId);
-              // resolve(data.connectionId);
             }
 
             // render stream
             if (data?.Data) {
               const hasErrors = data?.Data?.errors;
-
-              if (hasErrors) {
-                return motionbox.onError(data.Data.errors);
-              }
-
               let done = false;
               const isDone =
                 data.Data?.finalVideo &&
@@ -175,6 +169,10 @@ export const motionbox: IMotionbox | undefined =
               const currentFrame = Number(data.Data?.progress);
               const percentage = currentFrame / total;
               const isProgressing = data.Data?.totalFrames;
+
+              if (hasErrors) {
+                return motionbox.onError(data.Data.errors);
+              }
 
               // TODO: log when ffmpeg trim and other pre render things happen
 
