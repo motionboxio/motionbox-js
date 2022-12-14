@@ -99,6 +99,7 @@ export const motionbox: IMotionbox | undefined =
           isDev,
           onDone,
           onError,
+          renderId,
           progress,
           templateId,
         }: IRender) => {
@@ -111,7 +112,7 @@ export const motionbox: IMotionbox | undefined =
 
               // trigger
               try {
-                motionbox.renderId = uuid();
+                motionbox.renderId = renderId ? renderId : uuid();
                 const connectionId = localStorage.getItem("connectionId");
 
                 await axios({

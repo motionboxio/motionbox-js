@@ -79,6 +79,7 @@ export interface IRender {
   isDev?: boolean;
   onDone: (video: string) => void;
   onError: (error: any) => void;
+  renderId?: string;
   templateId?: string;
   progress: (progress: IProgress) => void;
 }
